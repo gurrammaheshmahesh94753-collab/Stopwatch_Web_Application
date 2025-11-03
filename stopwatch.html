@@ -1,0 +1,157 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch Web Application</title>
+    <style>
+        body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #141E30, #243B55);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        }
+
+        h1 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        }
+
+        .stopwatch {
+        font-size: 3rem;
+        margin: 20px 0;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 20px 40px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .buttons {
+        display: flex;
+        gap: 15px;
+        }
+
+        button {
+        background: #00B4D8;
+        border: none;
+        color: white;
+        padding: 12px 25px;
+        border-radius: 10px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: 0.3s;
+        }
+
+        button:hover {
+        background: #0077B6;
+        transform: scale(1.05);
+        }
+
+        .laps {
+        margin-top: 25px;
+        width: 80%;
+        max-width: 400px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 15px;
+        overflow-y: auto;
+        max-height: 200px;
+        }
+
+        .lap {
+        font-size: 1.1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 5px 0;
+        }
+
+        footer {
+        margin-top: 30px;
+        font-size: 0.9rem;
+        opacity: 0.8;
+        }
+    </style>
+    </head>
+    <body>
+    <h1>Stopwatch Web Application</h1>
+    <div class="stopwatch" id="display">00:00:00</div>
+    <div class="buttons">
+        <button id="startPauseBtn">Start</button>
+        <button id="lapBtn">Lap</button>
+        <button id="resetBtn">Reset</button>
+    </div>
+    <div class="laps" id="laps"></div>
+
+    <footer>Developed by SkillCraft Intern</footer>
+
+    <script>
+        let startTime, updatedTime, difference, tInterval;
+        let running = false;
+        let lapCount = 0;
+
+        const display = document.getElementById('display');
+        const startPauseBtn = document.getElementById('startPauseBtn');
+        const lapBtn = document.getElementById('lapBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const laps = document.getElementById('laps');
+
+        function startPause() {
+        if (!running) {
+            running = true;
+            startTime = new Date().getTime() - (difference || 0);
+            tInterval = setInterval(updateTime, 10);
+            startPauseBtn.textContent = 'Pause';
+        } else {
+            running = false;
+            clearInterval(tInterval);
+            startPauseBtn.textContent = 'Start';
+        }
+        }
+
+        function reset() {
+        clearInterval(tInterval);
+        running = false;
+        difference = 0;
+        display.textContent = '00:00:00';
+        startPauseBtn.textContent = 'Start';
+        laps.innerHTML = '';
+        lapCount = 0;
+        }
+
+        function lap() {
+        if (running) {
+            lapCount++;
+            const lapTime = document.createElement('div');
+            lapTime.className = 'lap';
+            lapTime.textContent = `Lap ${lapCount}: ${display.textContent}`;
+            laps.prepend(lapTime);
+        }
+        }
+
+        function updateTime() {
+        updatedTime = new Date().getTime();
+        difference = updatedTime - startTime;
+
+        let hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+        let minutes = Math.floor((difference / (1000 * 60)) % 60);
+        let seconds = Math.floor((difference / 1000) % 60);
+
+        hours = (hours < 10) ? '0' + hours : hours;
+        minutes = (minutes < 10) ? '0' + minutes : minutes;
+        seconds = (seconds < 10) ? '0' + seconds : seconds;
+
+        display.textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        startPauseBtn.addEventListener('click', startPause);
+        resetBtn.addEventListener('click', reset);
+        lapBtn.addEventListener('click', lap);
+    </script>
+    </body>
+    </html>
